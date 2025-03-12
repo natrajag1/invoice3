@@ -41,34 +41,34 @@
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 20px;
             margin-bottom: 5px;
         }
 
         .header p {
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .section {
-            padding: 25px;
+            padding: 20px;
             border-bottom: 1px solid #eee;
         }
 
         .section-title {
             color: #4169E1;
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 15px;
             font-weight: bold;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .form-row {
             display: flex;
             gap: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .form-col {
@@ -77,15 +77,14 @@
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-size: 14px;
-            color: #333;
-            font-weight: 500;
+            color: #555;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
@@ -106,12 +105,11 @@
             background-color: #4169E1;
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 10px 15px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
             margin-right: 10px;
-            transition: background-color 0.3s;
         }
 
         .btn:hover {
@@ -147,24 +145,19 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         table th, table td {
             border: 1px solid #ddd;
-            padding: 12px 15px;
+            padding: 6px;
             text-align: left;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         table th {
             background-color: #f8f9fa;
             color: #333;
-            font-weight: 600;
-        }
-
-        table td:last-child {
-            text-align: center;
         }
 
         .item-row td:last-child {
@@ -173,22 +166,22 @@
 
         .total-row {
             text-align: right;
-            margin-top: 15px;
+            margin-top: 10px;
             font-weight: bold;
         }
 
         .total-amount {
             color: #4169E1;
-            font-size: 18px;
+            font-size: 12px;
         }
 
         .gst-amount-total {
             color: #4169E1;
-            font-size: 16px;
+            font-size: 12px;
         }
 
         .amount-words {
-            font-size: 14px;
+            font-size: 10px;
             color: #666;
             text-align: right;
             margin-top: 5px;
@@ -196,10 +189,9 @@
 
         .footer {
             text-align: center;
-            padding: 15px;
+            padding: 10px;
             font-size: 12px;
             color: #666;
-            background-color: #f9f9f9;
         }
 
         .footer span {
@@ -210,8 +202,6 @@
             display: flex;
             justify-content: flex-end;
             padding: 20px;
-            background-color: #f9f9f9;
-            border-top: 1px solid #eee;
         }
 
         @media (max-width: 768px) {
@@ -328,13 +318,13 @@
                 <thead>
                     <tr>
                         <th style="width: 5%;">Sl No.</th>
-                        <th style="width: 30%;">Description</th>
+                        <th style="width: 25%;">Description</th>
                         <th style="width: 15%;">HSN Code</th>
                         <th style="width: 10%;">Quantity</th>
-                        <th style="width: 10%;">Price</th>
+                        <th style="width: 10%;">Price (₹)</th>
                         <th style="width: 10%;">GST %</th>
                         <th style="width: 15%;">GST Amt</th>
-                        <th style="width: 15%;">Amount</th>
+                        <th style="width: 15%;">Amount (₹)</th>
                         <th style="width: 5%;"></th>
                     </tr>
                 </thead>
@@ -356,7 +346,7 @@
             
             <div class="total-row">
                 <span style="margin-right: 20px;">Total GST: <span class="gst-amount-total" id="totalGSTAmount">₹0.00</span></span>
-                Total: <span class="total-amount" id="totalAmount">₹0.00</span>
+                Grand Total: <span class="total-amount" id="totalAmount">₹0.00</span>
             </div>
             <div class="amount-words" id="amountInWords">Zero Rupees Only</div>
         </div>
@@ -412,7 +402,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Global variable to store the uploaded logo
             let uploadedLogo = null;
 
             // Set default dates
@@ -425,7 +414,13 @@
 
             // Logo upload functionality
             document.getElementById('uploadLogoBtn').addEventListener('click', function() {
-                document.getElementById('logoInput').click();
+                if (uploadedLogo) {
+                    uploadedLogo = null;
+                    document.getElementById('uploadLogoBtn').textContent = 'Upload Your Logo';
+                    document.getElementById('logoInput').value = '';
+                } else {
+                    document.getElementById('logoInput').click();
+                }
             });
 
             document.getElementById('logoInput').addEventListener('change', function(e) {
@@ -483,13 +478,17 @@
             document.getElementById('generateInvoiceBtn').addEventListener('click', function() {
                 if (validateForm()) {
                     const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
+                    const doc = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
 
                     // Add logo if uploaded
                     let yPosition = 10;
                     if (uploadedLogo) {
                         try {
-                            doc.addImage(uploadedLogo, 'PNG', 10, yPosition, 40, 20);
+                            doc.addImage(uploadedLogo, 'PNG', 10, yPosition, 20, 20);
                             yPosition += 25;
                         } catch (error) {
                             console.error('Error adding logo to PDF:', error);
@@ -497,24 +496,28 @@
                     }
 
                     // Invoice Header
-                    doc.setFontSize(16);
-                    doc.text(`#INVOICE`, 10, yPosition);
-                    yPosition += 10;
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(14);
+                    doc.text("INVOICE", 10, yPosition);
+                    yPosition += 5;
 
                     // Invoice Details
+                    doc.setFont("helvetica", "normal");
                     doc.setFontSize(10);
-                    doc.text(`Invoice Number: ${document.getElementById('invoiceNumber').value}`, 10, yPosition);
+                    doc.text(`#${document.getElementById('invoiceNumber').value}`, 10, yPosition);
                     doc.text(`Issue Date: ${document.getElementById('invoiceDate').value}`, 150, yPosition, { align: 'right' });
-                    yPosition += 5;
+                    yPosition += 4;
                     doc.text(`Due Date: ${document.getElementById('dueDate').value}`, 150, yPosition, { align: 'right' });
-                    yPosition += 10;
+                    yPosition += 6;
 
                     // Sender and Recipient Details
+                    doc.setFont("helvetica", "bold");
                     doc.setFontSize(12);
                     doc.text("From:", 10, yPosition);
                     doc.text("To:", 110, yPosition);
-                    doc.setFontSize(10);
-                    yPosition += 5;
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(9);
+                    yPosition += 4;
 
                     const senderName = document.getElementById('senderName').value || "-";
                     const senderAddress = doc.splitTextToSize(document.getElementById('senderAddress').value || "-", 90);
@@ -523,10 +526,10 @@
 
                     doc.text(senderName, 10, yPosition);
                     doc.text(recipientName, 110, yPosition);
-                    yPosition += 5;
+                    yPosition += 4;
 
-                    let senderHeight = senderAddress.length * 5;
-                    let recipientHeight = recipientAddress.length * 5;
+                    let senderHeight = senderAddress.length * 4;
+                    let recipientHeight = recipientAddress.length * 4;
                     let maxHeight = Math.max(senderHeight, recipientHeight);
 
                     doc.text(senderAddress, 10, yPosition);
@@ -535,15 +538,15 @@
 
                     doc.text(`Phone: ${document.getElementById('senderPhone').value || "-"}`, 10, yPosition);
                     doc.text(`Phone: ${document.getElementById('recipientPhone').value || "-"}`, 110, yPosition);
-                    yPosition += 5;
+                    yPosition += 4;
 
                     doc.text(`Email: ${document.getElementById('senderEmail').value || "-"}`, 10, yPosition);
                     doc.text(`Email: ${document.getElementById('recipientEmail').value || "-"}`, 110, yPosition);
-                    yPosition += 5;
+                    yPosition += 4;
 
                     doc.text(`GST No: ${document.getElementById('senderGST').value || "-"}`, 10, yPosition);
                     doc.text(`GST No: ${document.getElementById('recipientGST').value || "-"}`, 110, yPosition);
-                    yPosition += 10;
+                    yPosition += 6;
 
                     // Items Table using jspdf-autotable
                     const rows = [];
@@ -553,10 +556,10 @@
                             row.cells[1].querySelector('input').value || "-",
                             row.cells[2].querySelector('input').value || "-",
                             row.cells[3].querySelector('input').value,
-                            row.cells[4].querySelector('input').value,
+                            `${document.getElementById('currency').value}${parseFloat(row.cells[4].querySelector('input').value).toFixed(2)}`,
                             row.cells[5].querySelector('input').value,
-                            row.cells[6].querySelector('input').value,
-                            row.cells[7].querySelector('input').value
+                            `${document.getElementById('currency').value}${parseFloat(row.cells[6].querySelector('input').value).toFixed(2)}`,
+                            `${document.getElementById('currency').value}${parseFloat(row.cells[7].querySelector('input').value).toFixed(2)}`
                         ]);
                     });
 
@@ -564,55 +567,68 @@
                         startY: yPosition,
                         head: [['Sl No.', 'Description', 'HSN Code', 'Quantity', 'Price', 'GST %', 'GST Amt', 'Amount']],
                         body: rows,
-                        theme: 'striped',
-                        styles: { fontSize: 8, cellPadding: 2 },
-                        headStyles: { fillColor: [65, 105, 225] },
+                        theme: 'grid',
+                        styles: { fontSize: 8, cellPadding: 2, lineHeight: 1.2 },
+                        headStyles: { fillColor: [65, 105, 225], textColor: [255, 255, 255], fontSize: 9 },
                         columnStyles: {
                             0: { cellWidth: 15 },
                             1: { cellWidth: 40 },
-                            2: { cellWidth: 25 },
-                            3: { cellWidth: 20 },
+                            2: { cellWidth: 20 },
+                            3: { cellWidth: 15 },
                             4: { cellWidth: 20 },
-                            5: { cellWidth: 20 },
+                            5: { cellWidth: 15 },
                             6: { cellWidth: 20 },
                             7: { cellWidth: 20 }
                         }
                     });
 
-                    yPosition = doc.lastAutoTable.finalY + 10;
+                    yPosition = doc.lastAutoTable.finalY + 6;
 
                     // Total and GST
-                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(9);
                     doc.text(`Total GST: ${document.getElementById('totalGSTAmount').textContent}`, 150, yPosition, { align: 'right' });
-                    yPosition += 5;
+                    yPosition += 4;
                     doc.text(`Grand Total: ${document.getElementById('totalAmount').textContent}`, 150, yPosition, { align: 'right' });
-                    yPosition += 5;
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8);
+                    yPosition += 4;
                     doc.text(`${document.getElementById('amountInWords').textContent}`, 150, yPosition, { align: 'right' });
-                    yPosition += 10;
+                    yPosition += 6;
 
                     // Banking Details
-                    doc.setFontSize(12);
-                    doc.text("Banking Details:", 10, yPosition);
+                    doc.setFont("helvetica", "bold");
                     doc.setFontSize(10);
-                    yPosition += 5;
+                    doc.text("Banking Details:", 10, yPosition);
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(9);
+                    yPosition += 4;
                     doc.text(`Bank Name: ${document.getElementById('bankName').value || "-"}`, 10, yPosition);
-                    yPosition += 5;
+                    doc.text(`Bank Name: ${document.getElementById('bankName').value || "-"}`, 100, yPosition);
+                    yPosition += 4;
                     doc.text(`Account Number: ${document.getElementById('accountNumber').value || "-"}`, 10, yPosition);
-                    yPosition += 5;
+                    doc.text(`Account Number: ${document.getElementById('accountNumber').value || "-"}`, 100, yPosition);
+                    yPosition += 4;
                     doc.text(`Account Holder: ${document.getElementById('accountHolderName').value || "-"}`, 10, yPosition);
-                    yPosition += 5;
+                    doc.text(`Account Holder: ${document.getElementById('accountHolderName').value || "-"}`, 100, yPosition);
+                    yPosition += 4;
                     doc.text(`IFSC Code: ${document.getElementById('ifscCode').value || "-"}`, 10, yPosition);
-                    yPosition += 5;
+                    doc.text(`IFSC Code: ${document.getElementById('ifscCode').value || "-"}`, 100, yPosition);
+                    yPosition += 4;
                     doc.text(`Branch: ${document.getElementById('branchDetails').value || "-"}`, 10, yPosition);
-                    yPosition += 5;
+                    doc.text(`Branch: ${document.getElementById('branchDetails').value || "-"}`, 100, yPosition);
+                    yPosition += 4;
                     doc.text(`UPI ID: ${document.getElementById('upiId').value || "-"}`, 10, yPosition);
-                    yPosition += 10;
+                    doc.text(`UPI ID: ${document.getElementById('upiId').value || "-"}`, 100, yPosition);
+                    yPosition += 6;
 
                     // Additional Notes
-                    doc.setFontSize(12);
-                    doc.text("Notes:", 10, yPosition);
+                    doc.setFont("helvetica", "bold");
                     doc.setFontSize(10);
-                    yPosition += 5;
+                    doc.text("Notes:", 10, yPosition);
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(9);
+                    yPosition += 4;
                     const notes = doc.splitTextToSize(document.getElementById('additionalNotes').value || "N/A", 180);
                     doc.text(notes, 10, yPosition);
 
